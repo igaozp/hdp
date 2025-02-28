@@ -9,7 +9,8 @@ No idea.
 
 So I had to try.
 
-First, I sent the packets to myself, just to see how my own machine handled the poison I made up. Then, I sent them across continents to a remote Linux machine to see if they’d actually make it.
+First, I sent the packets to myself, just to see how my own machine handled the poison I made up. Then, I sent them across continents to a remote Linux machine to see if they’d actually make it
+
 # Some background first
 > [!NOTE]
 > Feel free to skip this section if you already know how the internet works. Otherwise, continue reading on
@@ -483,7 +484,7 @@ root@debian-s-1vcpu-512mb-10gb-fra1-01:~# curl ipinfo.io/161.35.222.56
 }
 ```
 
-Alright, looks like the experiment will span continents given that I'm running my client on Saudi Arabia, and the server is hosted in Frankfurt
+Alright, looks like the experiment will span continents given that I'm running my client in Saudi Arabia, and the server is hosted in Frankfurt
 
 Before running any deep analysis, I wanted to check that there is a network path between my Mac and the server, so I `ping`'ed the server from my Mac
 ```haskell
@@ -621,13 +622,45 @@ And as expected, sending or recieving packets from the Digital Ocean machine to 
 
 There's no way to know for sure.
 
+
 # Lessons learned
 Technically *yes*, you could use your own IP protocol. But unless you're a masochist, I do not suggest it
 - Your code won't be portable, and you'll need to support various operating systems
 - Your protocol will be randomly dropped at NAT gateways & firewalls. It might work on your own network, but I gaurentee it won't work on the internet
 - From my testing, there's no latency improvements from using a non-standard IP protocol
 
-TL;DR: ***Use TCP or UDP***
+TL;DR: ***Use UDP or TCP***
+
+> [!TIP]
+> If you're further interested, the good folks at Hacker News are discussed this document and had a lot of insights. [Checkout the discussion here](https://news.ycombinator.com/item?id=43169103)
+
+# Update (2025-03-01): What if we tried IPv6?
+
+A few readers ([here](https://news.ycombinator.com/item?id=43169314) & [here](https://github.com/Hawzen/hdp/issues/1#issue-2877545908)) suggested I try using my new protocol over IPv6—since it isn't NAT'ed like IPv4. I was curious, so I tried it
+
+After adding support for IPv6, I ssh'ed into the AWS server I used earlier in my experiments, and ran the server
+```haskell
+admin@ip-172-31-2-72:~/hdp$ RUST_BACKTRACE=full sudo cargo run --bin server 6 255 # The 6 is for IPv6
+| Protocol Number | Time (μs) (Server) | Source IP (Server) | Byte Sum (Server) |
+| --- | --- | --- |
+```
+
+Now I ran the client from my Mac, all across the world
+```haskell
+❯ fortune | cowsay | sudo cargo run --bin client 200 '2600:1f1c:1cf:b1ce:f653:afc7:4650:8aa0' 255 hdp
+Running `target/debug/client 2000 '2600:1f1c:1cf:b1ce:f653:afc7:4650:8aa0' 17 udp`
+| Protocol Number | Succeeded (Client) | Time (μs) (Client) | Byte sum (Client) | Failure reason (Client) |
+| 255 | 🫡 | 1740779795209398 | 49 | - |
+| 255 | 🫡 | 1740779795413344 | 50 | - |
+| 255 | 🫡 | 1740779795620781 | 51 | - |
+```
+
+Then it popped up on the server `| 255 | 1740779715088323 | my_ip | 49 |`
+
+It does works!
+
+This experiment has been truly a rollercoaster
+
 # Resources
 - The [UDP protocol specification](https://datatracker.ietf.org/doc/html/rfc768) is so minimal it is almost funny
 - [IP Protocol numbers that are assigned for testing](https://datatracker.ietf.org/doc/html/rfc3692#section-2.1)
