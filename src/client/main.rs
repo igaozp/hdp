@@ -74,8 +74,11 @@ fn main() -> io::Result<()> {
 
 
 fn send_packet(protocol_number: i32, dst_ip: IpAddr, l4_protocol: L4Protocol, payload: &[u8]) -> Result<(Duration, u64), Box<dyn std::error::Error>> {
-    let socket = Socket::new(Domain::IPV4, Type::RAW, Some(Protocol::from(protocol_number)))?;
-    socket.set_header_included_v4(false)?;
+    let use_ipv4 = dst_ip.is_ipv4();
+    let domain = if use_ipv4 { Domain::IPV4 } else { Domain::IPV6 };
+
+    let socket = Socket::new(domain, Type::RAW, Some(Protocol::from(protocol_number)))?;
+
 
     let dest = SocketAddr::new(dst_ip, 0);
     let dest_sockaddr = SockAddr::from(dest);
