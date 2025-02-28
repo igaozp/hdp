@@ -91,10 +91,11 @@ fn send_packet(protocol_number: i32, dst_ip: IpAddr, l4_protocol: L4Protocol, pa
     let time = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH);
     socket.send_to(&packet, &dest_sockaddr)?;
 
+    let ip_header_size = if use_ipv4 { 20 } else { 40 };
     // Return the time and the sum of the bytes in the packet including ip header
     let byte_sum = match l4_protocol {
-        L4Protocol::HDP => 20 /* (IP Header) */ + 12 /* (HDP Header) */ + payload.len() as u64,
-        L4Protocol::UDP => 20 /* (IP Header) */ + 8 /* (UDP Header) */ + payload.len() as u64,
+        L4Protocol::HDP => ip_header_size /* (IP Header) */ + 12 /* (HDP Header) */ + payload.len() as u64,
+        L4Protocol::UDP => ip_header_size /* (IP Header) */ + 8 /* (UDP Header) */ + payload.len() as u64,
     };
     Ok((time?, byte_sum))
 }
