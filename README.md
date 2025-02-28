@@ -632,7 +632,7 @@ Technically *yes*, you could use your own IP protocol. But unless you're a masoc
 TL;DR: ***Use UDP or TCP***
 
 > [!TIP]
-> If you're further interested, the good folks at Hacker News are discussed this document and had a lot of insights. [Checkout the discussion here](https://news.ycombinator.com/item?id=43169103)
+> If you're further interested, the good folks at Hacker News discussed this document and had a lot of insights. [Checkout the discussion here](https://news.ycombinator.com/item?id=43169103)
 
 # Update (2025-03-01): What if we tried IPv6?
 
