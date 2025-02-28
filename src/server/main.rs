@@ -11,12 +11,27 @@ use std::fs::create_dir_all;
 
 fn main() -> io::Result<()> {
     // IO
-    let usage_message = "Usage: server <ip-protocol>";
-    let ip_protocol = env::args().nth(1).expect(usage_message).parse::<i32>().expect("use a valid proto dummy");
+    let usage_message = "Usage: server <ip-version> <ip-protocol>";
+    let ip_version = env::args().nth(1).expect(usage_message).parse::<u8>().expect("use a valid ip-version—4 or 6. ipv4 deprecation comin real soon.. :(");
+    let ip_protocol = env::args().nth(2).expect(usage_message).parse::<i32>().expect("use a valid proto dummy");
+
+    let domain = match ip_version {
+        4 => Domain::IPV4,
+        6 => Domain::IPV6,
+        _ => panic!("sorry but we only support ipv4 and ipv6"),
+    };
 
     // Init
-    let socket = Socket::new(Domain::IPV4, Type::RAW, Some(Protocol::from(ip_protocol)))?;
-    let bind_addr = SocketAddr::from(([0, 0, 0, 0], 0));
+
+    let socket = Socket::new(domain, Type::RAW, Some(Protocol::from(ip_protocol)))?;
+
+    // Bind to the first interface on the system.
+    let bind_addr = match domain {
+        Domain::IPV4 => SocketAddr::from(([0, 0, 0, 0], 0)),
+        Domain::IPV6 => SocketAddr::from(([0, 0, 0, 0, 0, 0, 0, 0], 0)),
+        _ => panic!("aaaa mysterious error so you won't know what's wrong"),
+    };
+
     socket.bind(&bind_addr.into())?;
 
     let mut buffer: [MaybeUninit<u8>; 65535] = unsafe { MaybeUninit::uninit().assume_init() };
