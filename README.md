@@ -129,7 +129,7 @@ fortune | cowsay | sudo cargo run --bin client 127.0.0.1 # This time looping ove
 |               5 | 127.0.0.1          |               373 | 🫡                | 🫡                 | 373               | -                                                |                   54 |
 |               6 | nan                |               nan | 🤯                | 🫡                 | 373               | -                                                |                  nan |
 |               7 | 127.0.0.1          |               373 | 🫡                | 🫡                 | 373               | -                                                |                   77 |
-|               8 | 127.0.0.1          |               373 | 🫡                | 🫡                 | 373               | -                                                |                   63 |
+|               8 | 127.0.0.1          |               373 | 🫡                | 🫡                 | 373               | -                                                |                   63 |6
 |               9 | 127.0.0.1          |               373 | 🫡                | 🫡                 | 373               | -                                                |                   66 |
 |              10 | 127.0.0.1          |               373 | 🫡                | 🫡                 | 373               | -                                                |                   52 |
 |              11 | 127.0.0.1          |               373 | 🫡                | 🫡                 | 373               | -                                                |                   52 |
@@ -657,7 +657,7 @@ Running `target/debug/client 2000 '2600:1f1c:1cf:b1ce:f653:afc7:4650:8aa0' 17 ud
 
 Then it popped up on the server `| 255 | 1740779715088323 | my_ip | 49 |`
 
-It does works!
+It does work!
 
 This experiment has been truly a rollercoaster
 
